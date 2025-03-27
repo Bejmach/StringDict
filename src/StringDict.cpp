@@ -4,8 +4,6 @@
 #include <fstream>
 #include <string>
 
-std::string SD::allowedStart = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm_";
-
 Element PreElement::ToElement(){
 	Element element;
 	element.key = this->key;
@@ -45,7 +43,7 @@ std::vector<PreElement> SD::ReadFile(std::string path){
 			std::cout<<"Error!!! File not formated correctly. Error on line "<<i<<" line: \""<<line<<"\""<<std::endl;
 			return {};
 		}
-		if(allowedStart.find(elementValues[0][0]) == std::string::npos || allowedStart.find(elementValues[1][0]) == std::string::npos){
+		if(SO::Numeric(std::to_string(elementValues[0][0])) || SO::Numeric(std::to_string(elementValues[1][0]))){
 			std::cout<<"Error!!! Key or Value Can't start from number and symbols";
 			return {};
 		}

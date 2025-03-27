@@ -39,8 +39,6 @@ struct Node{
 
 class SD{
 	private:
-		static std::string allowedStart;
-
 		static std::vector<PreElement> ReadFile(std::string path);
 		static int Partition(std::vector<PreElement>& arr, int low, int high);
 		static void QuickSort(std::vector<PreElement>& arr, int low, int high);
