@@ -2,6 +2,7 @@
 #define STRINGDICT_H
 
 #include<iostream>
+#include <unordered_map>
 #include<vector>
 #include<fstream>
 
@@ -39,7 +40,7 @@ struct Node{
 
 class SD{
 	private:
-		static std::vector<PreElement> ReadFile(std::string path);
+		static std::vector<PreElement> PrepareData(std::string data);
 		static int Partition(std::vector<PreElement>& arr, int low, int high);
 		static void QuickSort(std::vector<PreElement>& arr, int low, int high);
 		static void SortElements(std::vector<PreElement>& elements);
@@ -47,10 +48,14 @@ class SD{
 		static Node* BuildBalancedTree(const std::vector<ParsedElement>& elements, int start, int end);
 
 	public:
-		static Node* FromFile(std::string path);
+		static std::string ReadFile(std::string path);
+		static Node* CreateBTree(std::string data);
+		static std::vector<Element> CreateList(std::string data);
+		static std::unordered_map<std::string, std::string> CreateUM(std::string data);
 		static void InorderTraversal(Node* root);
 		static Element* Find(Node* root, std::string key);
-		static Element* Find(Node* root, int keyValue);
+		static Element Find(std::vector<Element> root, std::string key);
+		static std::string Find(std::unordered_map<std::string, std::string> root, std::string key);
 };
 
 #endif

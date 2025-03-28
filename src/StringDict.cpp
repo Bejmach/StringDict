@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <unordered_map>
 
 Element PreElement::ToElement(){
 	Element element;
@@ -20,7 +22,7 @@ Node::~Node(){
 	}
 }
 
-std::vector<PreElement> SD::ReadFile(std::string path){
+std::string SD::ReadFile(std::string path){
 	std::ifstream file(path, std::ios::binary);
 	
 	if(!file){
@@ -28,23 +30,32 @@ std::vector<PreElement> SD::ReadFile(std::string path){
 		return{};
 	}
 
-	unsigned int lineCount = std::count(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>(), '\n');
+	std::ostringstream content;
+	content << file.rdbuf();
+	file.close();
+	return content.str();
+}
+std::vector<PreElement> SD::PrepareData(std::string data){
+	
+	std::istringstream stream(data);
+
+	unsigned int lineCount = std::count(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>(), '\n')+1;
 	std::vector<PreElement> elements(lineCount);
 
-	file.clear();
-	file.seekg(0);
+	stream.clear();
+	stream.seekg(0);
 
 	std::string line;
 	int i=0;
-	while(std::getline(file, line)){
+	while(std::getline(stream, line)){
 		PreElement element;
 		std::vector<std::string> elementValues = SO::Split(line, " ");
 		if(elementValues.size() != 2){
-			std::cout<<"Error!!! File not formated correctly. Error on line "<<i<<" line: \""<<line<<"\""<<std::endl;
+			std::cout<<"Error on line"<<i<<". File not formated correctly. Line: \""<<line<<"\""<<std::endl;
 			return {};
 		}
-		if(SO::Numeric(std::to_string(elementValues[0][0])) || SO::Numeric(std::to_string(elementValues[1][0]))){
-			std::cout<<"Error!!! Key or Value Can't start from number and symbols";
+		if(std::isdigit(elementValues[0][0]) || std::isdigit(elementValues[1][0])){
+			std::cout<<"Error on line"<<i<<". Key or Value Can't start from number and symbols. Line: \""<<line<<"\""<<std::endl;
 			return {};
 		}
 		element.key = elementValues[0];
@@ -53,7 +64,6 @@ std::vector<PreElement> SD::ReadFile(std::string path){
 		elements[i] = element;
 		i+=1;
 	}
-	file.close();
 	return elements;
 }
 
@@ -135,12 +145,31 @@ void SD::InorderTraversal(Node* root) {
     InorderTraversal(root->right);
 }
 
-Node* SD::FromFile(std::string path){
-	std::vector<PreElement> elementVec = ReadFile(path);
+Node* SD::CreateBTree(std::string data){
+	std::vector<PreElement> elementVec = PrepareData(data);
 	SortElements(elementVec);
 	std::vector<ParsedElement> parsedElements = SD::ParseElements(elementVec);
 	return BuildBalancedTree(parsedElements, 0, parsedElements.size()-1);
 }
+
+std::vector<Element> SD::CreateList(std::string data){
+	std::vector<PreElement> elementVec = PrepareData(data);
+	std::vector<Element> elements(elementVec.size());
+	for(int i=0; i<elementVec.size(); i++){
+		elements[i] = elementVec[i].ToElement();
+	}
+	return elements;
+}
+
+std::unordered_map<std::string, std::string> SD::CreateUM(std::string data){
+	std::vector<PreElement> elementVec = PrepareData(data);
+	std::unordered_map<std::string, std::string> um;
+	for(int i=0; i<elementVec.size(); i++){
+		um.insert({elementVec[i].key, elementVec[i].type});
+	}
+	return um;
+}
+
 
 Element* SD::Find(Node* root, std::string key){
 	int keyValue = SO::Value(key);
@@ -164,3 +193,23 @@ Element* SD::Find(Node* root, std::string key){
 	std::cout<<"element not in diccionary"<<std::endl;
 	return nullptr;
 }
+Element SD::Find(std::vector<Element> root, std::string key){
+	for(int i=0; i<root.size(); i++){
+		if(root[i].key == key){
+			return root[i];
+		}
+	}
+
+	std::cout<<"element not in diccionary"<<std::endl;
+	return {0,0};
+}
+
+std::string SD::Find(std::unordered_map<std::string, std::string> um, std::string key){
+	auto it = um.find(key);
+	if(it!=um.end()){
+		return it->second;
+	}
+	return nullptr;
+}
+
+
