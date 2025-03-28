@@ -11,19 +11,19 @@
 
 struct Element{
 	std::string key;
-	std::string type;
+	std::string value;
 };
 
 struct PreElement{
-	int value;
+	int id;
 	std::string key;
-	std::string type;
+	std::string value;
 
 	Element ToElement();
 };
 
 struct ParsedElement{
-	int value;
+	int id;
 	std::vector<Element> elements;
 };
 
@@ -31,10 +31,10 @@ struct Node{
 	Node *left;
 	Node *right;
 
-	int value;
+	int id;
 	std::vector<Element> elements;
 
-	Node(ParsedElement element) : value(element.value), elements(element.elements), left(nullptr), right(nullptr){}
+	Node(ParsedElement element) : id(element.id), elements(element.elements), left(nullptr), right(nullptr){}
 	~Node();
 };
 

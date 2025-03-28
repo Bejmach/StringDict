@@ -1,4 +1,4 @@
-#include "StringOperations.h"
+#include <StringOperations.h>
 #include<StringDict.h>
 #include <algorithm>
 #include <fstream>
@@ -9,7 +9,7 @@
 Element PreElement::ToElement(){
 	Element element;
 	element.key = this->key;
-	element.type = this->type;
+	element.value = this->value;
 	return element;
 }
 
@@ -59,8 +59,8 @@ std::vector<PreElement> SD::PrepareData(std::string data){
 			return {};
 		}
 		element.key = elementValues[0];
-		element.type = elementValues[1];
-		element.value = SO::Value(elementValues[0]);
+		element.value = elementValues[1];
+		element.id = SO::Value(elementValues[0]);
 		elements[i] = element;
 		i+=1;
 	}
@@ -69,11 +69,11 @@ std::vector<PreElement> SD::PrepareData(std::string data){
 
 // Partition function for QuickSort
 int SD::Partition(std::vector<PreElement>& arr, int low, int high) {
-    int pivot = arr[high].value;  // Choosing the last element as pivot
+    int pivot = arr[high].id;  // Choosing the last element as pivot
     int i = low - 1;              // Index of smaller element
 
     for (int j = low; j < high; j++) {
-        if (arr[j].value < pivot) { // Sorting in ascending order
+        if (arr[j].id < pivot) { // Sorting in ascending order
             i++;
             std::swap(arr[i], arr[j]);
         }
@@ -100,25 +100,25 @@ void SD::SortElements(std::vector<PreElement>& elements) {
 }
 
 std::vector<ParsedElement> SD::ParseElements(std::vector<PreElement> elements){
-	int differentValues = 0;
-	int curValue = -1;
+	int differentIds = 0;
+	int curId = -1;
 	for(int i=0; i<elements.size(); i++){
-		if(elements[i].value != curValue){
-			differentValues += 1;
-			curValue = elements[i].value;
+		if(elements[i].id != curId){
+			differentIds += 1;
+			curId = elements[i].id;
 		}
 	}
 
-	std::vector<ParsedElement> parsedElements(differentValues);
+	std::vector<ParsedElement> parsedElements(differentIds);
 
 	int i = -1;
-	curValue = -1;
+	curId = -1;
 	for(int j=0; j<elements.size(); j++){
-		if(elements[j].value != curValue){
+		if(elements[j].id != curId){
 			i+=1;
-			curValue = elements[j].value;
+			curId = elements[j].id;
 		}
-		parsedElements[i].value = curValue;
+		parsedElements[i].id = curId;
 		parsedElements[i].elements.push_back(elements[j].ToElement());
 	}
 	return parsedElements;
@@ -141,7 +141,7 @@ Node* SD::BuildBalancedTree(const std::vector<ParsedElement>& elements, int star
 void SD::InorderTraversal(Node* root) {
     if (!root) return;
     InorderTraversal(root->left);
-    std::cout << root->value << " ";
+    std::cout << root->id << " ";
     InorderTraversal(root->right);
 }
 
@@ -165,20 +165,20 @@ std::unordered_map<std::string, std::string> SD::CreateUM(std::string data){
 	std::vector<PreElement> elementVec = PrepareData(data);
 	std::unordered_map<std::string, std::string> um;
 	for(int i=0; i<elementVec.size(); i++){
-		um.insert({elementVec[i].key, elementVec[i].type});
+		um.insert({elementVec[i].key, elementVec[i].value});
 	}
 	return um;
 }
 
 
 Element* SD::Find(Node* root, std::string key){
-	int keyValue = SO::Value(key);
+	int keyId = SO::Value(key);
 
 	while (root){
-		if(keyValue < root->value){
+		if(keyId < root->id){
 			root = root->left;
 		}
-		else if(keyValue > root->value){
+		else if(keyId > root->id){
 			root = root->right;
 		}
 		else{
@@ -190,7 +190,6 @@ Element* SD::Find(Node* root, std::string key){
 			break;
 		}
 	}
-	std::cout<<"element not in diccionary"<<std::endl;
 	return nullptr;
 }
 Element SD::Find(std::vector<Element> root, std::string key){
@@ -200,7 +199,6 @@ Element SD::Find(std::vector<Element> root, std::string key){
 		}
 	}
 
-	std::cout<<"element not in diccionary"<<std::endl;
 	return {0,0};
 }
 
