@@ -6,7 +6,7 @@
 ## Comparison of string dictionaries that are supported by this component
 ### Comparison made using chrono in cpp
 * list - vector
-* UM - unordered list
+* UM - unordered map
 * BTree - binary tree
 ---
 **creation time - list size: 1000**
