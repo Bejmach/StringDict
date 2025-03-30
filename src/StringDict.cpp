@@ -13,7 +13,7 @@ Element PreElement::ToElement(){
 	return element;
 }
 
-Node::~Node(){
+Dict::~Dict(){
 	if(left!=nullptr){
 		delete left;
 	}
@@ -125,11 +125,11 @@ std::vector<ParsedElement> SD::ParseElements(std::vector<PreElement> elements){
 }
 
 // Function to build a balanced BST from a sorted vector of ParsedElements
-Node* SD::BuildBalancedTree(const std::vector<ParsedElement>& elements, int start, int end) {
+Dict* SD::BuildBalancedTree(const std::vector<ParsedElement>& elements, int start, int end) {
     if (start > end) return nullptr;
 
     int mid = start + (end - start) / 2;
-    Node* root = new Node(elements[mid]);
+    Dict* root = new Dict(elements[mid]);
 
     root->left = BuildBalancedTree(elements, start, mid - 1);
     root->right = BuildBalancedTree(elements, mid + 1, end);
@@ -138,14 +138,14 @@ Node* SD::BuildBalancedTree(const std::vector<ParsedElement>& elements, int star
 }
 
 // In-order traversal (for testing)
-void SD::InorderTraversal(Node* root) {
+void SD::InorderTraversal(Dict* root) {
     if (!root) return;
     InorderTraversal(root->left);
     std::cout << root->id << " ";
     InorderTraversal(root->right);
 }
 
-Node* SD::CreateBTree(std::string data){
+Dict* SD::CreateBTree(std::string data){
 	std::vector<PreElement> elementVec = PrepareData(data);
 	SortElements(elementVec);
 	std::vector<ParsedElement> parsedElements = SD::ParseElements(elementVec);
@@ -171,7 +171,7 @@ std::unordered_map<std::string, std::string> SD::CreateUM(std::string data){
 }
 
 
-Element* SD::Find(Node* root, std::string key){
+Element* SD::Find(Dict* root, std::string key){
 	int keyId = SO::Value(key);
 
 	while (root){
@@ -199,7 +199,7 @@ Element SD::Find(std::vector<Element> root, std::string key){
 		}
 	}
 
-	return {0,0};
+	return {"",""};
 }
 
 std::string SD::Find(std::unordered_map<std::string, std::string> um, std::string key){
