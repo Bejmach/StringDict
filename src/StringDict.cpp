@@ -1,6 +1,7 @@
 #include <StringOperations.h>
 #include<StringDict.h>
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -22,19 +23,6 @@ Dict::~Dict(){
 	}
 }
 
-std::string SD::ReadFile(std::string path){
-	std::ifstream file(path, std::ios::binary);
-	
-	if(!file){
-		std::cout<<"failed to open file: "<<path<<std::endl;
-		return{};
-	}
-
-	std::ostringstream content;
-	content << file.rdbuf();
-	file.close();
-	return content.str();
-}
 std::vector<PreElement> SD::PrepareData(std::string data){
 	
 	std::istringstream stream(data);
@@ -70,7 +58,7 @@ std::vector<PreElement> SD::PrepareData(std::string data){
 		elements[i] = element;
 		i+=1;
 	}
-	elements.resize(elements.size()-emptyLines);
+	elements.resize(elements.size()-1-emptyLines);
 	return elements;
 }
 
@@ -215,6 +203,45 @@ std::string SD::Find(std::unordered_map<std::string, std::string> um, std::strin
 		return it->second;
 	}
 	return nullptr;
+}
+
+void SD::Add(Dict* root, Element element){
+	if(root == nullptr){
+		return;
+	}
+	
+	int elementValue = SO::Value(element.key);
+	
+	while(true){
+		if(root->id<elementValue){
+			if(root->right == nullptr){
+				Dict* newDict = new Dict();
+				newDict->id = elementValue;
+				newDict->elements.push_back(element);
+				root->right = newDict;
+				return;
+			}
+			else{
+				root = root->right;
+			}
+		}
+		else if(root->id>elementValue){
+			if(root->left == nullptr){
+				Dict* newDict = new Dict();
+				newDict->id = elementValue;
+				newDict->elements.push_back(element);
+				root->left = newDict;
+				return;
+			}
+			else{
+				root = root->left;
+			}
+		}
+		else{
+			root->elements.push_back(element);
+			return;
+		}
+	}
 }
 
 

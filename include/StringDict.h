@@ -35,6 +35,7 @@ struct Dict{
 	std::vector<Element> elements;
 
 	Dict(ParsedElement element) : id(element.id), elements(element.elements), left(nullptr), right(nullptr){}
+	Dict(){};
 	~Dict();
 };
 
@@ -48,7 +49,6 @@ class SD{
 		static Dict* BuildBalancedTree(const std::vector<ParsedElement>& elements, int start, int end);
 
 	public:
-		static std::string ReadFile(std::string path);
 		static Dict* CreateBTree(std::string data);
 		static std::vector<Element> CreateList(std::string data);
 		static std::unordered_map<std::string, std::string> CreateUM(std::string data);
@@ -56,6 +56,8 @@ class SD{
 		static Element* Find(Dict* root, std::string key);
 		static Element Find(std::vector<Element> root, std::string key);
 		static std::string Find(std::unordered_map<std::string, std::string> root, std::string key);
+
+		void Add(Dict* root, Element element);
 };
 
 #endif
