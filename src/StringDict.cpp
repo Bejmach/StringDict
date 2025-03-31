@@ -47,10 +47,16 @@ std::vector<PreElement> SD::PrepareData(std::string data){
 
 	std::string line;
 	int i=0;
+
+	int emptyLines = 0;
 	while(std::getline(stream, line)){
+		if(line == ""){
+			emptyLines += 1;
+			continue;
+		}
 		PreElement element;
 		std::vector<std::string> elementValues = SO::Split(line, " ");
-		if(elementValues.size() != 2){
+		if(elementValues.size() < 2){
 			std::cout<<"Error on line"<<i<<". File not formated correctly. Line: \""<<line<<"\""<<std::endl;
 			return {};
 		}
@@ -64,6 +70,7 @@ std::vector<PreElement> SD::PrepareData(std::string data){
 		elements[i] = element;
 		i+=1;
 	}
+	elements.resize(elements.size()-emptyLines);
 	return elements;
 }
 
